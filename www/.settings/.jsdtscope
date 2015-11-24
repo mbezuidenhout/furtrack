@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="jquery-mobile/" kind="src" path="js"/>
+	<classpathentry kind="src" path="js/jquery-mobile"/>
+	<classpathentry excluding="lib/jasmine-1.2.0/" kind="src" path="spec"/>
+	<classpathentry kind="src" path="spec/lib/jasmine-1.2.0"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.USER_LIBRARY/Cordova"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.USER_LIBRARY/jQuery"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.USER_LIBRARY/jQuery-mobile"/>
+	<classpathentry kind="output" path=""/>
+</classpath>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" type="text/css" href="css/jquery-mobile/jquery.mobile-1.4.5.min.css" />
+        <script type="text/javascript" src="js/jquery-1.11.3.js"></script>
+        <script type="text/javascript" src="js/jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+        <script src="http://mariuss-macbook-pro.local:8080/target/target-script-min.js"></script>
+        <title>Furtrack - devices</title>
+    <style>
+    .header {
+        border: 0px;
+    }
+    .statusbar {
+        height: 15pt;
+        background-color: #f05b2a !important;
+    }
+    .controls {
+        height: 36pt;
+        background-color: #f07952;
+    }
+    .controls button {
+        top: 19pt;
+    }
+    .behind {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+    .behind a.ui-btn {
+        width: 68px;
+        margin: 0px;
+        float: right;
+        border-style: solid;
+        border-width: 1px;
+    }
+    .behind a.delete-btn, .behind a.delete-btn:active, .behind a.delete-btn:visited, .behind a.delete-btn:focus, .behind a.delete-btn:hover {
+        color: white;
+        background-color: red;
+        text-shadow: none;
+    }
+    .behind a.ui-btn.pull-left {
+        float: left;
+    }
+    .behind a.edit-btn, .behind a.edit-btn:active, .behind a.edit-btn:visited, .behind a.edit-btn:focus, .behind a.edit-btn:hover {
+        color: white;
+        background-color: orange;
+        text-shadow: none;
+    }
+    #clone {
+        display:none;
+    }
+    #device-list {
+        margin: auto;
+    }
+    </style>
+    </head>
+    <body>
+        <div data-role="page" id="Page1">
+            <div data-role="header" class="header" data-position="fixed">
+              <div class="statusbar"></div>
+              <div class="controls">
+                <a href="#Page2" data-transition="slide"><button id="add" class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right ui-icon-plus">Add</button></a></div>
+            </div>
+            <div data-role="content">
+                <ul data-role="listview" class="swipe-delete" id="device-list">
+                      <li id="clone">
+                        <div class="behind">
+                            <a href="#" class="ui-btn delete-btn">Delete</a>
+                            <a href="#Page2" data-transition="slide" class="ui-btn edit-btn pull-left">Edit</a>
+                        </div>
+                        <a href="#" class="name">item 1</a>
+                      </li>
+                </ul>
+            </div><!--  /content -->
+	        <div data-role="footer" data-id="foo1" data-position="fixed">
+	            <div data-role="navbar">
+		            <ul>
+			            <li><a href="index.html" data-ajax="false">Info</a></li>
+			            <li><a href="map.html" data-ajax="false">Map</a></li>
+			            <li><a href="devices.html" data-ajax="false" class="ui-btn-active ui-state-persist">Devices</a></li>
+			        </ul>
+	            </div><!-- /navbar -->
+	        </div><!-- /footer -->
+        </div><!-- Page1 -->
+        <div data-role="page" id="Page2">
+            <div data-role="header" class="header" data-position="fixed">
+              <div class="statusbar"></div>
+              <div class="controls">
+                <a href="#Page1" data-transition="slide" data-direction="reverse"><button class="ui-btn-left ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-left ui-icon-arrow-l">Back</button></a>
+              </div>
+            </div>
+            <div data-role="content">
+                <form name="device-form" id="device-form" action="#Page1" data-transition="slide" data-direction="reverse" data-ajax="false">
+                    <input type="hidden" name="id" id="id" value=""/>
+                    <div data-role="fieldcontain" class="ui-hide-label">
+                        <label for="name">Name:</label>
+                        <input type="text" name="name" id="name" value="" placeholder="Device name" autocorrect="off" autocapitalize="on"/>
+                    </div>
+                    <div data-role="fieldcontain" class="ui-hide-label">
+                        <label for="deviceId">Device ID or IMEI:</label>
+                        <input type="number" name="deviceId" id="deviceId" value="" pattern="\d*" placeholder="Device ID or IMEI"/>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <input type="submit" value="Save" />
+                    </div>
+                </form>
+            </div><!--  /content -->
+            <div data-role="footer" data-id="foo1" data-position="fixed">
+            </div><!-- /footer -->
+        </div><!--  Page2 -->        
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/devices.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+    </body>
+</html>
