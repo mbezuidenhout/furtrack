@@ -17,6 +17,21 @@
  * under the License.
  */
 
+window.onerror = function(message, file, line) {
+  var error = [];
+  error.push('---[error]');
+  if (typeof message == "object") {
+    var keys = Object.keys(message);
+    keys.forEach(function(key) {
+      error.push('[' + key + '] ' + message[key]);
+    });
+  } else {
+    error.push(line + ' at ' + file);
+    error.push(message);
+  }
+  alert(error.join("\n"));
+};
+
 var map = {
 	map: null,
     myLoc: null,
@@ -39,10 +54,15 @@ var map = {
 		}
     },
     onSuccess: function(position) {
-    	var lng = position.coords.longitude;
-    	var lat = position.coords.latitude;
-    	
-    	var latLng = new google.maps.LatLng(lat, lng);
+    	var latLng = null;
+    	if(position !== null) {
+	    	var lng = position.coords.longitude;
+	    	var lat = position.coords.latitude;
+	    	
+	    	latLng = new google.maps.LatLng(lat, lng);
+    	} else {
+    		latLng = new google.maps.LatLng(51.5, 0);
+    	}
    
         var mapOptions = {
                 center: latLng,
@@ -61,20 +81,22 @@ var map = {
             zIndex: 999,
             map: map.map
         });
-        map.myloc.setPosition(latLng);
 
-        (function moveMe() {
-            setTimeout(function() {
-                navigator.geolocation.getCurrentPosition(function(pos) {
-                    var me = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-                    map.myloc.setPosition(me);
-                    console.log(pos.coords.latitude);
-                    moveMe();
-                }, function(error) {
-                    // ...
-                });
-            }, 2000);
-        })();
+        if(position !== null) {
+            map.myloc.setPosition(latLng);
+	        (function moveMe() {
+	            setTimeout(function() {
+	                navigator.geolocation.getCurrentPosition(function(pos) {
+	                    var me = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+	                    map.myloc.setPosition(me);
+	                    console.log(pos.coords.latitude);
+	                    moveMe();
+	                }, function(error) {
+	                    // ...
+	                });
+	            }, 2000);
+	        })();
+        }
 
         var devices = JSON.parse(localStorage.getItem('devices'));
         
@@ -93,7 +115,7 @@ var map = {
         }
     },
     onError: function() {
-    	
+    	map.onSuccess(null);
     },
     // Update map on a Received Event
     loadMapsApi: function() {
@@ -114,7 +136,7 @@ var map = {
                 states[Connection.NONE]     = 'No network connection';
 
                 console.log('Connection type: ' + states[networkState]);
-                alert(states[networkState]);
+                //alert(states[networkState]);
             }, 500);
         }catch(e){
             console.log(e);
@@ -134,7 +156,7 @@ var map = {
     },
     onMapsApiLoaded: function() {
         console.log('onMapsApiLoaded');
-        navigator.geolocation.getCurrentPosition(map.onSuccess, map.onError,{'enableHighAccuracy':true,'timeout':10000});
+        navigator.geolocation.getCurrentPosition(map.onSuccess, map.onError,{'enableHighAccuracy':true,'timeout':3000});
     }
 };
 

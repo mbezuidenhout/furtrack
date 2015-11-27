@@ -16,6 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+window.onerror = function(message, file, line) {
+  var error = [];
+  error.push('---[error]');
+  if (typeof message == "object") {
+    var keys = Object.keys(message);
+    keys.forEach(function(key) {
+      error.push('[' + key + '] ' + message[key]);
+    });
+  } else {
+    error.push(line + ' at ' + file);
+    error.push(message);
+  }
+  alert(error.join("\n"));
+};
+
 var app = {
 	x: null,
     // Application Constructor
@@ -32,15 +48,17 @@ var app = {
     },
     populateDeviceList: function() {
     	var devices = JSON.parse(localStorage.getItem("devices"));
-	    for(var i=0;i < devices.length; i++) {
-	        var clonedli = $("#clone").clone().appendTo("#device-list");
-	        clonedli.removeAttr('id');
-	        clonedli.attr('id', 'item' + devices[i].id);
-	        if(devices[i].name.length == 0)
-	        	clonedli.find('.name').html('&nbsp;');
-	        else
-	            clonedli.find('.name').text(devices[i].name);
-	    }
+    	if(devices !== null) {
+		    for(var i=0;i < devices.length; i++) {
+		        var clonedli = $("#clone").clone().appendTo("#device-list");
+		        clonedli.removeAttr('id');
+		        clonedli.attr('id', 'item' + devices[i].id);
+		        if(devices[i].name.length == 0)
+		        	clonedli.find('.name').html('&nbsp;');
+		        else
+		            clonedli.find('.name').text(devices[i].name);
+		    }
+    	}
 	    $('.swipe-delete li > a')
 	        .on('touchstart', function(e) {
 	            //console.log(e.originalEvent.pageX);

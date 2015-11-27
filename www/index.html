@@ -31,31 +31,26 @@
         <script type="text/javascript" src="js/jquery-1.11.3.js"></script>
         <script type="text/javascript" src="js/jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
         <script src="http://mariuss-macbook-pro.local:8080/target/target-script-min.js"></script>
-        <title>FurTrack</title>
+        <title>FurTrack - map</title>
     </head>
     <body>
-        <div data-role="page" id="Page1">
-            <div data-role="content">
-		        <div class="app">
-		            <h1>PhoneGap</h1>
-		            <div id="deviceready" class="blink">
-		                <p class="event listening">Connecting to Device</p>
-				<p class="event received">Device is Ready</p>
-		            </div>
+        <div data-role="page" id="Page2">
+	        <div data-role="content">
+		        <div id="map" style="width:100%;height:100%;">
 		        </div>
-            </div><!--  /content -->
-	        <div data-role="footer" data-id="foo1" data-position="fixed">
-	            <div data-role="navbar">
-		            <ul>
-			            <li><a href="index.html" data-ajax="false" class="ui-btn-active ui-state-persist">Info</a></li>
-			            <li><a href="map.html" data-ajax="false">Map</a></li>
+	        </div><!-- /content -->
+			<div data-role="footer" data-id="foo1" data-position="fixed">
+			    <div data-role="navbar">
+			        <ul>
+			            <li><a href="map.html" data-ajax="false" class="ui-btn-active ui-state-persist">Map</a></li>
 			            <li><a href="devices.html" data-ajax="false">Devices</a></li>
 			        </ul>
-	            </div><!-- /navbar -->
-	        </div><!-- /footer -->
-        </div>
+			    </div><!-- /navbar -->
+			</div><!-- /footer -->
+        </div>        
+        <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDosZ5H7pKXLwXRmq2eJ3AOjDX7CT7TcPs&sensor=false"></script> // -->
         <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/map.js"></script>
         <script type="text/javascript">
             app.initialize();
         </script>
