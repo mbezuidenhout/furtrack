@@ -32,6 +32,17 @@ window.onerror = function(message, file, line) {
   alert(error.join("\n"));
 };
 
+var pins = 
+	[ "http://maps.google.com/mapfiles/marker.png",
+	  "http://maps.google.com/mapfiles/marker_green.png",
+	  "http://maps.google.com/mapfiles/marker_black.png",
+	  "http://maps.google.com/mapfiles/marker_grey.png",
+	  "http://maps.google.com/mapfiles/marker_orange.png",
+	  "http://maps.google.com/mapfiles/marker_white.png",
+	  "http://maps.google.com/mapfiles/marker_yellow.png",
+	  "http://maps.google.com/mapfiles/marker_purple.png",
+	  "http://maps.google.com/mapfiles/marker_green.png"];
+
 var map = {
 	map: null,
     myLoc: null,
@@ -48,6 +59,7 @@ var map = {
 	    	device.marker = new google.maps.Marker({
 	    		position: latLng,
 	    		map: map.map,
+	    		icon: device.pin,
 	    		title: device.name
 	    	});
 	    	map.map.panTo(latLng);
@@ -103,6 +115,10 @@ var map = {
         if(devices !== null) {
         	for(var i = 0; i < devices.length; i++) {
         		var device = devices[i];
+        		device.pin = new google.maps.MarkerImage(pins[i - Math.floor(i / pins.length) * pins.length],
+        			    new google.maps.Size(21, 34),
+        			    new google.maps.Point(0,0),
+        			    new google.maps.Point(10, 34));
 		        (function poll(device) {
 		     	   setTimeout(function() {
 		     		   $.ajax({ url: "http://furtrack.com/?furtrackgps=location&ident=" + device.deviceId, success: function(data){

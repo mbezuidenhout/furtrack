@@ -32,6 +32,17 @@ window.onerror = function(message, file, line) {
   alert(error.join("\n"));
 };
 
+var pins = 
+	[ "http://maps.google.com/mapfiles/marker.png",
+	  "http://maps.google.com/mapfiles/marker_green.png",
+	  "http://maps.google.com/mapfiles/marker_black.png",
+	  "http://maps.google.com/mapfiles/marker_grey.png",
+	  "http://maps.google.com/mapfiles/marker_orange.png",
+	  "http://maps.google.com/mapfiles/marker_white.png",
+	  "http://maps.google.com/mapfiles/marker_yellow.png",
+	  "http://maps.google.com/mapfiles/marker_purple.png",
+	  "http://maps.google.com/mapfiles/marker_green.png"];
+
 var app = {
 	x: null,
     // Application Constructor
@@ -54,9 +65,9 @@ var app = {
 		        clonedli.removeAttr('id');
 		        clonedli.attr('id', 'item' + devices[i].id);
 		        if(devices[i].name.length == 0)
-		        	clonedli.find('.name').html('&nbsp;');
+		        	clonedli.find('.name').html('<img src="' + pins[i - Math.floor(i / pins.length) * pins.length] + '">' + '&nbsp;');
 		        else
-		            clonedli.find('.name').text(devices[i].name);
+		        	clonedli.find('.name').html('<img src="' + pins[i - Math.floor(i / pins.length) * pins.length] + '"> ' + devices[i].name);
 		    }
     	}
 	    $('.swipe-delete li > a')
