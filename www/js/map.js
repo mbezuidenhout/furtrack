@@ -40,30 +40,68 @@ var pins =
 	  "http://maps.google.com/mapfiles/marker_orange.png",
 	  "http://maps.google.com/mapfiles/marker_white.png",
 	  "http://maps.google.com/mapfiles/marker_yellow.png",
-	  "http://maps.google.com/mapfiles/marker_purple.png",
-	  "http://maps.google.com/mapfiles/marker_green.png"];
+	  "http://maps.google.com/mapfiles/marker_purple.png"];
+var colors = 
+	[ "#FF0000",
+	  "#00FF00",
+	  "#000000",
+	  "#888888",
+	  "#FF8800",
+	  "#000000",
+	  "#880000",
+	  "#008888",
+	 ];
 
 var map = {
 	map: null,
     myLoc: null,
 	marker: null,
-    setMarker: function(data, device) {
-    	console.log(device.deviceId);
-		var latLng = new google.maps.LatLng(data.loc.lat, data.loc.lng);
-    	
-		if(device.marker instanceof google.maps.Marker) {
-			console.log("Repositioning this device");
-			device.marker.setPosition(latLng);
-		} else {
-			console.log("First time for this device");
-	    	device.marker = new google.maps.Marker({
-	    		position: latLng,
-	    		map: map.map,
-	    		icon: device.pin,
-	    		title: device.name
-	    	});
-	    	map.map.panTo(latLng);
+	drawTrack: function(points, device) {
+		var devicePoints = [];
+		for(var point in points) {
+			devicePoints.push({lat: points[point].lat, lng: points[point].lng});
 		}
+		if(devicePoints.length > 0) {
+			device.path = new google.maps.Polyline({
+				path: devicePoints,
+				geodesic: true,
+			    strokeColor: device.trackColor,
+			    strokeOpacity: 1.0,
+			    strokeWeight: 2
+			});
+			device.path.setMap(map.map);
+		}
+	},
+    setMarker: function(loc, device) {
+    	console.log(device.deviceId);
+    	if(typeof loc.lat !== 'undefined') {
+			var latLng = new google.maps.LatLng(loc.lat, loc.lng);
+	    	
+			if(device.marker instanceof google.maps.Marker) {
+				console.log("Repositioning this device");
+				var devicePoints = [];
+				if(!(device.path instanceof google.maps.Polyline)) {
+					var currLatLng = device.marker.getPosition();
+					devicePoints.push({lat: currLatLng.lat(), lng: currLatLng.lng()});
+				} else
+					devicePoints = device.path.getPath().getArray();
+				devicePoints.push({lat: loc.lat, lng: loc.lng});
+				if(!(device.path instanceof google.maps.Polyline)) {
+					map.drawTrack(devicePoints, device);
+				} else
+					device.path.setPath(devicePoints);
+				device.marker.setPosition(latLng);
+			} else {
+				console.log("First time for this device");
+		    	device.marker = new google.maps.Marker({
+		    		position: latLng,
+		    		map: map.map,
+		    		icon: device.pin,
+		    		title: device.name
+		    	});
+		    	map.map.panTo(latLng);
+			}
+    	}
     },
     onSuccess: function(position) {
     	var latLng = null;
@@ -119,14 +157,28 @@ var map = {
         			    new google.maps.Size(21, 34),
         			    new google.maps.Point(0,0),
         			    new google.maps.Point(10, 34));
-		        (function poll(device) {
+        		device.trackColor = colors[i - Math.floor(i / colors.length) * colors.length];
+		        (function poll(device, drawPath) {
 		     	   setTimeout(function() {
-		     		   $.ajax({ url: "http://furtrack.com/?furtrackgps=location&ident=" + device.deviceId, success: function(data){
-		     			   map.setMarker(data, device);
-		     			   poll(device);
+		     		   var furtrackApiOpts = {
+		     			  furtrackgps: 'location',
+		     			  ident: device.deviceId,
+		     		   };
+		     		   if(drawPath === true)
+		     			   furtrackApiOpts.duration = 19800;
+		     		   furtrackApiOpts = $.param(furtrackApiOpts);
+		     		   $.ajax({ url: "http://furtrack.com/?" + furtrackApiOpts, success: function(data){
+		     			   if(drawPath === true) {
+		     				   if(data.points.length > 0) {
+		     					   map.drawTrack(data.points, device);
+		     					   map.setMarker(data.points[0], device);
+		     				   }
+		     			   } else
+		     				   map.setMarker(data.loc, device);
+		     			   poll(device ,false);
 		     		   }, dataType: "json"});
 		     	   }, 5000);
-		        })(device);
+		        })(device, true);
         	}
         }
     },
@@ -135,8 +187,8 @@ var map = {
     },
     // Update map on a Received Event
     loadMapsApi: function() {
+    	/*
     	try{
-    		console.log('try');
             var networkState = navigator.connection && navigator.connection.type;
 
             setTimeout(function(){
@@ -160,13 +212,20 @@ var map = {
             	console.log(key+' => '+value);
             });
         }
+        */
+    	
 //        if(navigator.connection.type === Connection.NONE) {
 //    	    console.log('No connection');
 //            return;
 //        } 
         console.log('Calling getScript');
 //        app.onMapsApiLoaded();
-        $.getScript('https://maps.googleapis.com/maps/api/js?key=AIzaSyDosZ5H7pKXLwXRmq2eJ3AOjDX7CT7TcPs&sensor=true&callback=map.onMapsApiLoaded',
+        var mapsApiOpts = $.param({
+        		key: 'AIzaSyDosZ5H7pKXLwXRmq2eJ3AOjDX7CT7TcPs',
+        		sensor: 'true',
+        		callback: 'map.onMapsApiLoaded'
+        	});
+        $.getScript('https://maps.googleapis.com/maps/api/js?' + mapsApiOpts,
          function() { console.log('Got script'); })
          .fail(function(e) { console.log('Failed to get script'); });
     },
