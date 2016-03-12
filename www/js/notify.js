@@ -4,14 +4,12 @@ var notify = {
 			if(typeof(PushNotification) != 'undefined') {
 				var push = PushNotification.init({
 		            android: 	{ senderID: "1063922592601", clearNotifications: "true", forceShow: "true"},
-		            ios: 		{ alert: "true", badge: "true", sound: "true", clearBadge: "true", gcmSandbox: "true"},
+		            ios: 		{ alert: "true", badge: "true", sound: "true", clearBadge: "true"},
 		            windows: 	{}
 		        });
 	        
-				localStorage.removeItem('isPushRegistered');
-	        
 		        push.on('registration', function(data) {
-		            if(localStorage.getItem("deviceToken") != data.registrationId) {
+		            //if(localStorage.getItem("deviceToken") != data.registrationId) {
 			            // data.registrationId
 			        	$.ajax({
 			          	  type: "POST",
@@ -20,7 +18,7 @@ var notify = {
 			          	  dataType: "json",
 			          	  success: function(data) { localStorage.setItem("deviceToken", data.registrationId); },
 			          	});
-			        }
+			        //}
 		        });
 	
 	/*        

@@ -1,3 +1,15 @@
+var pins =
+[ "http://maps.google.com/mapfiles/marker.png",
+  "http://maps.google.com/mapfiles/marker_green.png",
+  "http://maps.google.com/mapfiles/marker_black.png",
+  "http://maps.google.com/mapfiles/marker_grey.png",
+  "http://maps.google.com/mapfiles/marker_orange.png",
+  "http://maps.google.com/mapfiles/marker_white.png",
+  "http://maps.google.com/mapfiles/marker_yellow.png",
+  "http://maps.google.com/mapfiles/marker_purple.png",
+  "http://maps.google.com/mapfiles/marker_green.png"];
+
+
 var app = {
     connState: null,
     // Application Constructor
@@ -25,12 +37,18 @@ var app = {
         app.onOrientationChange();
         console.log('onDeviceReady');
         notify.init();
-        $(document).on('online', map.loadMapsApi());
+        $(document).one('online', map.loadMapsApi() );
+        devices.populateDeviceList();
+        $('#device-form').bind('submit', devices.onSubmitDevices);
         app.checkConnection();
-        setTimeout(function() {
-                navigator.splashscreen.hide();
-            }, 6000);
         // map.loadMapsApi();
+        $("#add").bind('click', function() { $("#device-form").trigger("reset"); } );
+        
+        $(document).on("pagecontainershow", function (event, ui) {
+            console.log("Showing " + ui.toPage.attr('id'));
+            if(ui.toPage.attr('id') == 'Page1')
+                google.maps.event.trigger(map.map, 'resize');
+            } );
     },
     //onOnline: function() {
     //    console.log('onOnline');
@@ -59,21 +77,17 @@ var app = {
     },
     
     checkConnection: function() {
-        (function poll() {
+        (function poll(timeout) {
          setTimeout(
             function() {
                 connState = navigator.network.connection.type;
                 if(connState != Connection.NONE) {
-                    if(serverReachable("furtrack.com")) {
-                        $('#no-internet').hide();
-                        $(document).trigger('online');
-                    } else
-                        $('#no-internet').show();
+                    serverReachable("furtrack.com");
                 } else {
                     $('#no-internet').show();
                 }
-                poll();
-            }, 3000);
-         })();
+                poll(3000);
+            }, timeout);
+         })(200);
     }
 };

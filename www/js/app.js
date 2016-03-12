@@ -24,22 +24,27 @@ function serverReachable(server) {
     // IE vs. standard XHR creation
     var x = new ( window.ActiveXObject || XMLHttpRequest )( "Microsoft.XMLHTTP" ),
     s;
+    x.onreadystatechange = function() {
+        s = x.status;
+        if(x.readyState == 4)
+            if(s >= 200 && s < 300 || s === 304 ) {
+                $('#no-internet').hide();
+                $(document).trigger('online');
+            } else
+                $('#no-internet').show();
+    }
     x.open(
            // requesting the headers is faster, and just enough
            "HEAD",
            // append a random string to the current hostname,
            // to make sure we're not hitting the cache
            "http://" + server + "/?rand=" + Math.random(),
-           // make a synchronous request
-           false
+           // make a asynchronous request
+           true
            );
     try {
         x.send();
-        s = x.status;
-        // Make sure the server is reachable
-        return ( s >= 200 && s < 300 || s === 304 );
-        // catch network & other problems
-    } catch (e) {
-        return false;
+    } catch(e) {
+        
     }
 }

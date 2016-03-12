@@ -20,6 +20,19 @@
     -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
 }
 
+html,body,div[data-role ="page"], div[data-role="content"] {
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+    padding: 0px;
+}
+
 body {
     -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
     -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
@@ -38,11 +51,7 @@ body {
     background-attachment:fixed;
     font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
     font-size:12px;
-    height:100%;
-    margin:0px;
-    padding:0px;
     text-transform:uppercase;
-    width:100%;
 }
 
 /* Portrait layout (default) */
@@ -69,12 +78,20 @@ body {
     }
 }
 
+#no-internet {
+    background-color:   lightgrey;
+    display:            none;
+    width:              100%;
+    padding:            3px;
+    text-transform:     none;
+}
+
 h1 {
-    font-size:24px;
+    font-size:  24px;
     font-weight:normal;
-    margin:0px;
-    overflow:visible;
-    padding:0px;
+    margin:     0px;
+    overflow:   visible;
+    padding:    0px;
     text-align:center;
 }
 
@@ -116,4 +133,57 @@ h1 {
 
 .ui-content {
 	padding:0 !important;
+}
+
+.header {
+    border: 0px;
+}
+.statusbar {
+    height: 15pt;
+    background-color: #f05b2a !important;
+}
+.controls {
+    height: 36pt;
+    background-color: #f07952;
+}
+.controls button {
+    top: 19pt;
+}
+.behind {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.behind a.ui-btn {
+    height: 24px;
+    width: 68px;
+    margin: 0px;
+    float: right;
+    border-style: solid;
+    border-width: 1px;
+}
+.behind a.delete-btn, .behind a.delete-btn:active, .behind a.delete-btn:visited, .behind a.delete-btn:focus, .behind a.delete-btn:hover {
+    color: white;
+    background-color: red;
+    text-shadow: none;
+}
+.behind a.ui-btn.pull-left {
+    float: left;
+}
+.behind a.edit-btn, .behind a.edit-btn:active, .behind a.edit-btn:visited, .behind a.edit-btn:focus, .behind a.edit-btn:hover {
+    color: white;
+    background-color: orange;
+    text-shadow: none;
+}
+#clone {
+    display:none;
+}
+#device-list {
+    margin: auto;
+}
+.ui-header-fixed {
+    top:0;
+    padding-top:0;
 }

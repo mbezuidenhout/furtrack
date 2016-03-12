@@ -17,21 +17,6 @@
  * under the License.
  */
 
-window.onerror = function(message, file, line) {
-  var error = [];
-  error.push('---[error]');
-  if (typeof message == "object") {
-    var keys = Object.keys(message);
-    keys.forEach(function(key) {
-      error.push('[' + key + '] ' + message[key]);
-    });
-  } else {
-    error.push(line + ' at ' + file);
-    error.push(message);
-  }
-  alert(error.join("\n"));
-};
-
 var pins = 
 	[ "http://maps.google.com/mapfiles/marker.png",
 	  "http://maps.google.com/mapfiles/marker_green.png",
@@ -56,52 +41,76 @@ var map = {
 	map: null,
     myLoc: null,
 	marker: null,
-	drawTrack: function(points, device) {
+	drawTrack: function(points, gpsDevice) {
 		var devicePoints = [];
 		for(var point in points) {
 			devicePoints.push({lat: points[point].lat, lng: points[point].lng});
 		}
 		if(devicePoints.length > 0) {
-			device.path = new google.maps.Polyline({
+			gpsDevice.path = new google.maps.Polyline({
 				path: devicePoints,
 				geodesic: true,
-			    strokeColor: device.trackColor,
+			    strokeColor: gpsDevice.trackColor,
 			    strokeOpacity: 1.0,
 			    strokeWeight: 2
 			});
-			device.path.setMap(map.map);
+			gpsDevice.path.setMap(map.map);
 		}
 	},
-    setMarker: function(loc, device) {
-    	console.log(device.deviceId);
-    	if(typeof loc.lat !== 'undefined') {
+    setMarker: function(loc, gpsDevice) {
+    	console.log(gpsDevice.deviceId);
+    	if(loc !== null && typeof loc.lat !== 'undefined') {
 			var latLng = new google.maps.LatLng(loc.lat, loc.lng);
 	    	
-			if(device.marker instanceof google.maps.Marker) {
+			if(gpsDevice.marker instanceof google.maps.Marker) {
 				console.log("Repositioning this device");
 				var devicePoints = [];
-				if(!(device.path instanceof google.maps.Polyline)) {
-					var currLatLng = device.marker.getPosition();
+				if(!(gpsDevice.path instanceof google.maps.Polyline)) {
+					var currLatLng = gpsDevice.marker.getPosition();
 					devicePoints.push({lat: currLatLng.lat(), lng: currLatLng.lng()});
 				} else
-					devicePoints = device.path.getPath().getArray();
+					devicePoints = gpsDevice.path.getPath().getArray();
 				devicePoints.push({lat: loc.lat, lng: loc.lng});
-				if(!(device.path instanceof google.maps.Polyline)) {
-					map.drawTrack(devicePoints, device);
+				if(!(gpsDevice.path instanceof google.maps.Polyline)) {
+					map.drawTrack(devicePoints, gpsDevice);
 				} else
-					device.path.setPath(devicePoints);
-				device.marker.setPosition(latLng);
+					gpsDevice.path.setPath(devicePoints);
+				gpsDevice.marker.setPosition(latLng);
 			} else {
 				console.log("First time for this device");
-		    	device.marker = new google.maps.Marker({
+				gpsDevice.marker = new google.maps.Marker({
 		    		position: latLng,
 		    		map: map.map,
-		    		icon: device.pin,
-		    		title: device.name
+		    		icon: gpsDevice.pin,
+		    		title: gpsDevice.name
 		    	});
-		    	map.map.panTo(latLng);
+		    	//map.map.panTo(latLng);
+		    	var mapBounds = map.map.getBounds();
+		    	mapBounds.extend(latLng);
+		    	map.map.fitBounds(mapBounds);
 			}
     	}
+    },
+    setFence: function(path, id) {
+    	var devices = JSON.parse(localStorage.getItem('devices'));
+    	gpsDevices = [];
+    	for(var i =0; i < devices.length; i++)
+    		gpsDevices.push(devices[i].deviceId);
+    	var opts = { furtrackgps: 'setfence', points: JSON.stringify(path), devices: gpsDevices, client: device.uuid };
+    	if(id !== undefined)
+    		opts.id = id;
+        
+    	// Add fence on server
+    	$.ajax({
+      	  type: "POST",
+      	  url: 'http://furtrack.com/',
+      	  data: opts,
+      	  dataType: "json",
+      	  success: function(data) {
+      		  var fence = { path: path, id: data.id };
+      		  localStorage.setItem("fence", JSON.stringify(fence));
+    	  },
+      	});
     },
     onSuccess: function(position) {
     	var latLng = null;
@@ -121,6 +130,68 @@ var map = {
             };
 
         map.map = new google.maps.Map(document.getElementById("map"), mapOptions);
+                
+        // Get fence from local storage and update server        
+        var fence = JSON.parse(localStorage.getItem('fence'));
+        if(fence !== null) {
+	        var polygon = new google.maps.Polygon({
+				   path: fence.path,
+				   strokeWeight: 0,
+				   fillColor: '#000000',
+				   fillOpacity: 0.3,
+				   editable: true
+		   });
+		   polygon.setMap(map.map);
+		   
+		   var path = polygon.getPath();
+		   
+		   google.maps.event.addListener(path, 'set_at', function(pointNr, latLng) { 
+			   map.setFence(polygon.getPath().getArray(), fence.id);
+		   } );
+		   google.maps.event.addListener(path, 'insert_at', function(pointNr, latLng) { 
+			   map.setFence(polygon.getPath().getArray(), fence.id);
+		   } );
+	   
+	       var furtrackApiOpts = $.param({furtrackgps: 'getfence', id: fence.id});
+	       $.ajax({ url: "http://furtrack.com/?" + furtrackApiOpts, 
+	        	success: function(data) {
+	        		// Fence found
+	        		// Update fence
+	        		map.setFence(path.getArray(), fence.id);
+	        	},
+			    error: function() {
+			    	// Fence not found
+			    	map.setFence(path.getArray());
+			    },
+	        	dataType: "json"
+	            });
+        }
+
+        // End update server fence
+        
+        var drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: null,
+            drawingControl: true,
+            drawingControlOptions: {
+              position: google.maps.ControlPosition.TOP_CENTER,
+              drawingModes: [
+                google.maps.drawing.OverlayType.POLYGON,
+              ],
+            },
+            polygonOptions: {
+          	  strokeWeight: 0,
+				  fillColor: '#000000',
+				  fillOpacity: 0.3,
+				  editable: true
+            }
+        });
+        drawingManager.setMap(map.map);
+        
+        google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon) {
+            drawingManager.setDrawingMode(null);
+            map.setFence(polygon.getPath().getArray());
+        });
+        
         map.myloc = new google.maps.Marker({
             clickable: false,
             icon: new google.maps.MarkerImage('http://maps.gstatic.com/mapfiles/mobile/mobileimgs2.png',
@@ -139,7 +210,6 @@ var map = {
 	                navigator.geolocation.getCurrentPosition(function(pos) {
 	                    var me = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
 	                    map.myloc.setPosition(me);
-	                    console.log(pos.coords.latitude);
 	                    moveMe();
 	                }, function(error) {
 	                    // ...
@@ -148,37 +218,37 @@ var map = {
 	        })();
         }
 
-        var devices = JSON.parse(localStorage.getItem('devices'));
+        var gpsDevices = JSON.parse(localStorage.getItem('devices'));
         
-        if(devices !== null) {
-        	for(var i = 0; i < devices.length; i++) {
-        		var device = devices[i];
-        		device.pin = new google.maps.MarkerImage(pins[i - Math.floor(i / pins.length) * pins.length],
+        if(gpsDevices !== null) {
+        	for(var i = 0; i < gpsDevices.length; i++) {
+        		var gpsDevice = gpsDevices[i];
+        		gpsDevice.pin = new google.maps.MarkerImage(pins[i - Math.floor(i / pins.length) * pins.length],
         			    new google.maps.Size(21, 34),
         			    new google.maps.Point(0,0),
         			    new google.maps.Point(10, 34));
-        		device.trackColor = colors[i - Math.floor(i / colors.length) * colors.length];
-		        (function poll(device, drawPath) {
+        		gpsDevice.trackColor = colors[i - Math.floor(i / colors.length) * colors.length];
+		        (function poll(gpsDevice, drawPath) {
 		     	   setTimeout(function() {
 		     		   var furtrackApiOpts = {
 		     			  furtrackgps: 'location',
-		     			  ident: device.deviceId,
+		     			  ident: gpsDevice.deviceId,
 		     		   };
 		     		   if(drawPath === true)
-		     			   furtrackApiOpts.duration = 19800;
+		     			   furtrackApiOpts.duration = 28000;
 		     		   furtrackApiOpts = $.param(furtrackApiOpts);
 		     		   $.ajax({ url: "http://furtrack.com/?" + furtrackApiOpts, success: function(data){
 		     			   if(drawPath === true) {
 		     				   if(data.points.length > 0) {
-		     					   map.drawTrack(data.points, device);
-		     					   map.setMarker(data.points[0], device);
+		     					   map.drawTrack(data.points, gpsDevice);
+		     					   map.setMarker(data.points[0], gpsDevice);
 		     				   }
 		     			   } else
-		     				   map.setMarker(data.loc, device);
-		     			   poll(device ,false);
+		     				   map.setMarker(data.loc, gpsDevice);
+		     			   poll(gpsDevice ,false);
 		     		   }, dataType: "json"});
 		     	   }, 5000);
-		        })(device, true);
+		        })(gpsDevice, true);
         	}
         }
     },
@@ -187,42 +257,12 @@ var map = {
     },
     // Update map on a Received Event
     loadMapsApi: function() {
-    	/*
-    	try{
-            var networkState = navigator.connection && navigator.connection.type;
 
-            setTimeout(function(){
-                networkState = navigator.connection && navigator.connection.type;
-
-                var states = {};
-                states[Connection.UNKNOWN]  = 'Unknown connection';
-                states[Connection.ETHERNET] = 'Ethernet connection';
-                states[Connection.WIFI]     = 'WiFi connection';
-                states[Connection.CELL_2G]  = 'Cell 2G connection';
-                states[Connection.CELL_3G]  = 'Cell 3G connection';
-                states[Connection.CELL_4G]  = 'Cell 4G connection';
-                states[Connection.NONE]     = 'No network connection';
-
-                console.log('Connection type: ' + states[networkState]);
-                //alert(states[networkState]);
-            }, 500);
-        }catch(e){
-            console.log(e);
-            $.each(navigator, function(key, value){
-            	console.log(key+' => '+value);
-            });
-        }
-        */
-    	
-//        if(navigator.connection.type === Connection.NONE) {
-//    	    console.log('No connection');
-//            return;
-//        } 
-        console.log('Calling getScript');
 //        app.onMapsApiLoaded();
         var mapsApiOpts = $.param({
         		key: 'AIzaSyDosZ5H7pKXLwXRmq2eJ3AOjDX7CT7TcPs',
         		sensor: 'true',
+        		libraries: 'drawing',
         		callback: 'map.onMapsApiLoaded'
         	});
         $.getScript('https://maps.googleapis.com/maps/api/js?' + mapsApiOpts,
@@ -231,62 +271,6 @@ var map = {
     },
     onMapsApiLoaded: function() {
         console.log('onMapsApiLoaded');
-        navigator.geolocation.getCurrentPosition(map.onSuccess, map.onError,{'enableHighAccuracy':true,'timeout':3000});
-    }
-};
-
-var app = {
-    // Application Constructor
-    initialize: function() {
-        console.log('app.initialize');
-        this.bindEvents();
+        navigator.geolocation.getCurrentPosition(map.onSuccess, map.onError,{enableHighAccuracy:true, timeout:3000});
     },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        //document.addEventListener('deviceready', this.onDeviceReady, false);
-    	$(document).bind('deviceready', app.onDeviceReady);
-//        document.addEventListener('online', this.onOnline, false);
-//        document.addEventListener('resume', this.onResume, false);
-    },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-    	$(window).unbind();
-    	$(window).bind('pageshow resize orientationchange', app.onOrientationChange);
-        app.onOrientationChange();
-        console.log('onDeviceReady');
-        //localStorage.setItem("lastname", "Smith");
-        //console.log(localStorage.getItem("lastname"));
-        map.loadMapsApi();
-    },
-    onOnline: function() {
-        console.log('onOnline');
-        app.loadMapsApi();
-    },
-    onResume: function() {
-        console.log('onResume');
-        app.loadMapsApi();
-    },
-    
-    onOrientationChange: function() {
-    	console.log('window size change');
-        var h = $('div[data-role="header"]').outerHeight(true);
-        var f = $('div[data-role="footer"]').outerHeight(true);
-        var w = $(window).height();
-        var c = $('div[data-role="content"]');
-        var c_h = c.height();
-        var c_oh = c.outerHeight(true);
-        var c_new = w - h - f - c_oh + c_h;
-        var total = h + f + c_oh;
-        if(c_h<c.get(0).scrollHeight){
-            c.height(c.get(0).scrollHeight);
-        }else{
-            c.height(c_new);
-        }
-    }
 };
