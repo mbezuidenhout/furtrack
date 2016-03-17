@@ -20,18 +20,19 @@ if(typeof(device) == 'undefined') {
 	};
 }
 
+var x = new ( window.ActiveXObject || XMLHttpRequest )( "Microsoft.XMLHTTP" );
 function serverReachable(server) {
     // IE vs. standard XHR creation
-    var x = new ( window.ActiveXObject || XMLHttpRequest )( "Microsoft.XMLHTTP" ),
-    s;
     x.onreadystatechange = function() {
-        s = x.status;
-        if(x.readyState == 4)
-            if(s >= 200 && s < 300 || s === 304 ) {
-                $('#no-internet').hide();
-                $(document).trigger('online');
-            } else
-                $('#no-internet').show();
+    	if(x !== 'undefined') {
+	        s = x.status;
+	        if(x.readyState == 4)
+	            if(s >= 200 && s < 300 || s === 304 ) {
+	                $('#no-internet').hide();
+	                $(document).trigger('online');
+	            } else
+	                $('#no-internet').show();
+    	}
     }
     x.open(
            // requesting the headers is faster, and just enough

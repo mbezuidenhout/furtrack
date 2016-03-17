@@ -38,7 +38,6 @@ var app = {
         console.log('onDeviceReady');
         notify.init();
         $(document).one('online', map.loadMapsApi() );
-        devices.populateDeviceList();
         $('#device-form').bind('submit', devices.onSubmitDevices);
         app.checkConnection();
         // map.loadMapsApi();
@@ -48,6 +47,8 @@ var app = {
             console.log("Showing " + ui.toPage.attr('id'));
             if(ui.toPage.attr('id') == 'Page1')
                 google.maps.event.trigger(map.map, 'resize');
+            if(!devices.done && ui.toPage.attr('id') == 'Page2')
+                devices.populateDeviceList();
             } );
     },
     //onOnline: function() {

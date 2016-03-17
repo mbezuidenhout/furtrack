@@ -1,6 +1,8 @@
 var devices = {
 	x: null,
+	done: null,
     populateDeviceList: function() {
+    	this.done = true;
     	var devices = JSON.parse(localStorage.getItem("devices"));
     	if(devices !== null) {
 		    for(var i=0;i < devices.length; i++) {
