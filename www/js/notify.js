@@ -13,7 +13,7 @@ var notify = {
 			            // data.registrationId
 			        	$.ajax({
 			          	  type: "POST",
-			          	  url: 'http://furtrack.com/',
+			          	  url: app.serverProto + '://' + app.server + '/',
 			          	  data: {furtrackgps: 'register', token: data.registrationId, devicetype: device.platform, client: device.uuid},
 			          	  dataType: "json",
 			          	  success: function(data) { localStorage.setItem("deviceToken", data.registrationId); },

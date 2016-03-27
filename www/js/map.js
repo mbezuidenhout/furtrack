@@ -99,11 +99,12 @@ var map = {
     	var opts = { furtrackgps: 'setfence', points: JSON.stringify(path), devices: gpsDevices, client: device.uuid };
     	if(id !== undefined)
     		opts.id = id;
-        
+        console.log(opts);
     	// Add fence on server
-    	$.ajax({
+    	/*
+        $.ajax({
       	  type: "POST",
-      	  url: 'http://furtrack.com/',
+      	  url: app.serverProto + '://' + app.server + '/',
       	  data: opts,
       	  dataType: "json",
       	  success: function(data) {
@@ -111,6 +112,7 @@ var map = {
       		  localStorage.setItem("fence", JSON.stringify(fence));
     	  },
       	});
+      	*/
     },
     onSuccess: function(position) {
     	var latLng = null;
@@ -153,7 +155,7 @@ var map = {
 		   } );
 	   
 	       var furtrackApiOpts = $.param({furtrackgps: 'getfence', id: fence.id});
-	       $.ajax({ url: "http://furtrack.com/?" + furtrackApiOpts, 
+	       $.ajax({ url: app.serverProto + '://' + app.server + '/?' + furtrackApiOpts, 
 	        	success: function(data) {
 	        		// Fence found
 	        		// Update fence
@@ -237,7 +239,7 @@ var map = {
 		     		   if(drawPath === true)
 		     			   furtrackApiOpts.duration = 28000;
 		     		   furtrackApiOpts = $.param(furtrackApiOpts);
-		     		   $.ajax({ url: "http://furtrack.com/?" + furtrackApiOpts, success: function(data){
+		     		   $.ajax({ url: app.serverProto + '://' + app.server + '/?' + furtrackApiOpts, success: function(data){
 		     			   if(drawPath === true) {
 		     				   if(data.points.length > 0) {
 		     					   map.drawTrack(data.points, gpsDevice);

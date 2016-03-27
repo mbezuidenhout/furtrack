@@ -11,6 +11,8 @@ var pins =
 
 
 var app = {
+    server: 'furtrack.com',
+    serverProto: 'http',
     connState: null,
     // Application Constructor
     initialize: function() {
@@ -83,7 +85,7 @@ var app = {
             function() {
                 connState = navigator.network.connection.type;
                 if(connState != Connection.NONE) {
-                    serverReachable("furtrack.com");
+                    serverReachable(app.server);
                 } else {
                     $('#no-internet').show();
                 }

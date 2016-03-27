@@ -24,7 +24,7 @@ var x = new ( window.ActiveXObject || XMLHttpRequest )( "Microsoft.XMLHTTP" );
 function serverReachable(server) {
     // IE vs. standard XHR creation
     x.onreadystatechange = function() {
-    	if(x !== 'undefined') {
+    	try {
 	        s = x.status;
 	        if(x.readyState == 4)
 	            if(s >= 200 && s < 300 || s === 304 ) {
@@ -32,7 +32,10 @@ function serverReachable(server) {
 	                $(document).trigger('online');
 	            } else
 	                $('#no-internet').show();
+    	} catch(e) {
+    		// Could not get connectivity state
     	}
+    	
     }
     x.open(
            // requesting the headers is faster, and just enough
