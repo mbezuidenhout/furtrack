@@ -236,8 +236,9 @@ var map = {
 		     			  furtrackgps: 'location',
 		     			  ident: gpsDevice.deviceId,
 		     		   };
+		     		   // The duration is defined in minutes
 		     		   if(drawPath === true)
-		     			   furtrackApiOpts.duration = 28000;
+		     			   furtrackApiOpts.duration = 1440; // Get 24 hours worth of track data
 		     		   furtrackApiOpts = $.param(furtrackApiOpts);
 		     		   $.ajax({ url: app.serverProto + '://' + app.server + '/?' + furtrackApiOpts, success: function(data){
 		     			   if(drawPath === true) {
@@ -247,6 +248,8 @@ var map = {
 		     				   }
 		     			   } else
 		     				   map.setMarker(data.loc, gpsDevice);
+		     			   if(null !== data.status && null !== data.status.battery)
+		     				   devices.setBatteryLevel(data.status.battery, gpsDevice);
 		     			   poll(gpsDevice ,false);
 		     		   }, dataType: "json"});
 		     	   }, 5000);

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.furtrack.furtrack" version="1.0" android-versionCode="10005" ios-CFBundlVersion="1.0.13" windows-packageVersion="1.0.13" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="com.furtrack.furtrack" version="1.0" android-versionCode="10007" ios-CFBundlVersion="1.0.13" windows-packageVersion="1.0.13" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>FurTrack</name>
     <description>
         Pet tracking application for furtrack device from http://furtrack.com/

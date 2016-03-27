@@ -74,6 +74,21 @@ var devices = {
 	    
     },
     
+    setBatteryLevel: function(level, gpsDevice) {
+    	console.log('Set battery level indicator for ' + gpsDevice.deviceId + ' to ' + level);
+    	$("#item" + gpsDevice.deviceId).text("Battery level indicator");
+    	var devices = JSON.parse(localStorage.getItem("devices"));
+    	if(devices !== null) {
+		    for(var i=0;i < devices.length; i++) {
+		    	if(devices[i].deviceId == gpsDevice.deviceId) {
+		    		$('#item' + devices[i].id).find('.battery').remove();
+		    		$('#item' + devices[i].id).find('.name').append('<div class="battery" style="float:right"><div class="level" style="width:' + level + '%"></div></div>');
+		    		break;
+		    	}
+		    }
+    	}
+    },
+    
     onSubmitDevices: function(e) {
         var devices = JSON.parse(localStorage.getItem('devices'));
         var maxId = 0;

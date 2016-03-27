@@ -187,3 +187,54 @@ h1 {
     top:0;
     padding-top:0;
 }
+
+/* Battery indicator */
+
+body {
+  background: white;
+}
+
+.battery {
+  position: relative;
+  width: 36px;
+  height: 12px;
+  border: 1px solid #000;
+  border-radius: 2px;
+  position: relative;
+  padding: 1px;
+  -webkit-transform: scale(0.5);
+}
+.battery:before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: -5.1px;
+  margin-top: -3px;
+  width: 6px;
+  height: 6px;
+  background: #000;
+  clip: rect(0, 6px, 6px, 3.9px);
+  border-radius: 50%;
+}
+.battery.plugged:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: -19px;
+  margin-top: -3px;
+  width: 6px;
+  height: 6px;
+  background: #f00;
+  border-radius: 50%;
+}
+.battery .level {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  border-radius: 1px;
+}
+
+
+/* Battery Indicator */
