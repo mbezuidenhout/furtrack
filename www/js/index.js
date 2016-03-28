@@ -39,10 +39,9 @@ var app = {
         app.onOrientationChange();
         console.log('onDeviceReady');
         notify.init();
-        $(document).one('online', map.loadMapsApi() );
+        $(document).one('online', map.loadMapsApi );
         $('#device-form').bind('submit', devices.onSubmitDevices);
         app.checkConnection();
-        // map.loadMapsApi();
         $("#add").bind('click', function() { $("#device-form").trigger("reset"); } );
         
         $(document).on("pagecontainershow", function (event, ui) {

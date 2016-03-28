@@ -116,6 +116,7 @@ var map = {
     },
     onSuccess: function(position) {
     	var latLng = null;
+    	navigator.splashscreen.hide();
     	if(position !== null) {
 	    	var lng = position.coords.longitude;
 	    	var lat = position.coords.latitude;
@@ -272,6 +273,7 @@ var map = {
         	});
         $.getScript('https://maps.googleapis.com/maps/api/js?' + mapsApiOpts,
          function() { console.log('Got script'); })
+         .done(function() { console.log('Done getting script') } )
          .fail(function(e) { console.log('Failed to get script'); });
     },
     onMapsApiLoaded: function() {

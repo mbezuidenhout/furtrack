@@ -20,9 +20,9 @@ if(typeof(device) == 'undefined') {
 	};
 }
 
-var x = new ( window.ActiveXObject || XMLHttpRequest )( "Microsoft.XMLHTTP" );
 function serverReachable(server) {
     // IE vs. standard XHR creation
+	var x = new ( window.ActiveXObject || XMLHttpRequest )( "Microsoft.XMLHTTP" );
     x.onreadystatechange = function() {
     	try {
 	        s = x.status;
