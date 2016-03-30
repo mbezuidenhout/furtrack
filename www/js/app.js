@@ -20,7 +20,7 @@ if(typeof(device) == 'undefined') {
 	};
 }
 
-function serverReachable(server) {
+function serverReachable(server, proto) {
     // IE vs. standard XHR creation
 	var x = new ( window.ActiveXObject || XMLHttpRequest )( "Microsoft.XMLHTTP" );
     x.onreadystatechange = function() {
@@ -30,8 +30,10 @@ function serverReachable(server) {
 	            if(s >= 200 && s < 300 || s === 304 ) {
 	                $('#no-internet').hide();
 	                $(document).trigger('online');
-	            } else
+	            } else {
 	                $('#no-internet').show();
+	                console.log('Could not connect to ' + app.server);
+	            }
     	} catch(e) {
     		// Could not get connectivity state
     	}
@@ -42,7 +44,7 @@ function serverReachable(server) {
            "HEAD",
            // append a random string to the current hostname,
            // to make sure we're not hitting the cache
-           "http://" + server + "/?rand=" + Math.random(),
+           proto + "://" + server + "/?rand=" + Math.random(),
            // make a asynchronous request
            true
            );

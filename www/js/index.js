@@ -39,9 +39,13 @@ var app = {
         app.onOrientationChange();
         console.log('onDeviceReady');
         notify.init();
-        $(document).one('online', map.loadMapsApi );
+        if('Android' == device.platform) {
+        	map.loadMapsApi();
+        } else {
+	        $(document).one('online', map.loadMapsApi );
+	        app.checkConnection(app.server, app.serverProto);
+        }
         $('#device-form').bind('submit', devices.onSubmitDevices);
-        app.checkConnection();
         $("#add").bind('click', function() { $("#device-form").trigger("reset"); } );
         
         $(document).on("pagecontainershow", function (event, ui) {
