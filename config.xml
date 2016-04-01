@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.furtrack.helloworld" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>Hello World</name>
+<widget id="com.furtrack.furtrack" version="1.0" android-versionCode="10008" ios-CFBundlVersion="1.0.16" windows-packageVersion="1.0.13" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+    <name>FurTrack</name>
     <description>
-        Hello World sample application that responds to the deviceready event.
+        Pet tracking application for furtrack device from http://furtrack.com/
     </description>
-    <author email="support@phonegap.com" href="http://phonegap.com">
-        PhoneGap Team
+    <author email="marius@furtrack.com" href="http://furtrack.com">
+        Marius Bezuidenhout
     </author>
     <content src="index.html" />
     <preference name="permissions" value="none" />
     <preference name="orientation" value="default" />
-    <preference name="target-device" value="universal" />
+    <preference name="target-device" value="handset" />
     <preference name="fullscreen" value="true" />
     <preference name="webviewbounce" value="true" />
     <preference name="prerendered-icon" value="true" />
@@ -18,11 +18,23 @@
     <preference name="ios-statusbarstyle" value="black-opaque" />
     <preference name="detect-data-types" value="true" />
     <preference name="exit-on-suspend" value="false" />
-    <preference name="show-splash-screen-spinner" value="true" />
-    <preference name="auto-hide-splash-screen" value="true" />
+    <preference name="ShowSplashScreenSpinner" value="false" />
+    <preference name="AutoHideSplashScreen" value="false" />
+    <preference name="SplashScreenDelay" value="4000" />
+    <preference name="SplashScreen" value="screen" />
+    <preference name="FadeSplashScreen" value="false" />
+    <preference name="BackupWebStorage" value="local" />
     <preference name="disable-cursor" value="false" />
-    <preference name="android-minSdkVersion" value="14" />
+    <preference name="android-minSdkVersion" value="15" />
+    <preference name="android-targetSdkVersion" value="19" />
     <preference name="android-installLocation" value="auto" />
+    <preference name="android-build-tool" value="gradle" />
+    <feature name="http://api.phonegap.com/1.0/network"/>
+    <feature name="http://api.phonegap.com/1.0/geolocation"/>
+    <feature name="http://api.phonegap.com/1.0/notification"/>
+    <feature name="debug-server" required="true">
+        <param name="domain" value="http://192.168.10.29"/>
+    </feature>
     <gap:plugin name="org.apache.cordova.battery-status" />
     <gap:plugin name="org.apache.cordova.camera" />
     <gap:plugin name="org.apache.cordova.media-capture" />
@@ -41,6 +53,12 @@
     <gap:plugin name="org.apache.cordova.network-information" />
     <gap:plugin name="org.apache.cordova.splashscreen" />
     <gap:plugin name="org.apache.cordova.vibration" />
+    <gap:plugin name="phonegap-plugin-push" />
+    <gap:plugin name="cordova-plugin-whitelist" />
+    <gap:plugin name="plugin.google.maps">
+        <param name="API_KEY_FOR_ANDROID" value="AIzaSyBZIJGHwQYP3j7Vom9zbV3xNzXL70AEt84" />
+        <param name="API_KEY_FOR_IOS" value="AIzaSyCa2lbbr7z5ShSGHadUTX5XsijergfLYOk" />
+    </gap:plugin>
     <icon src="icon.png" />
     <icon gap:platform="android" gap:qualifier="ldpi" src="www/res/icon/android/icon-36-ldpi.png" />
     <icon gap:platform="android" gap:qualifier="mdpi" src="www/res/icon/android/icon-48-mdpi.png" />
@@ -48,39 +66,98 @@
     <icon gap:platform="android" gap:qualifier="xhdpi" src="www/res/icon/android/icon-96-xhdpi.png" />
     <icon gap:platform="blackberry" src="www/res/icon/blackberry/icon-80.png" />
     <icon gap:platform="blackberry" gap:state="hover" src="www/res/icon/blackberry/icon-80.png" />
-    <icon gap:platform="ios" height="57" src="www/res/icon/ios/icon-57.png" width="57" />
+    <!-- iOS 8.0+ -->
+    <!-- iPhone 6 Plus  -->
+    <icon gap:platform="ios" height="180" src="www/res/icon/ios/icon-60@3x.png" width="180" />
+    <!-- iOS 7.0+ -->
+    <!-- iPhone / iPod Touch  -->
+    <icon gap:platform="ios" height="60" src="www/res/icon/ios/icon-60.png" width="60" />
+    <icon gap:platform="ios" height="120" src="www/res/icon/ios/icon-60@2x.png" width="120" />
+    <!-- iPad -->
+    <icon gap:platform="ios" height="76" src="www/res/icon/ios/icon-76.png" width="76" />
+    <icon gap:platform="ios" height="152" src="www/res/icon/ios/icon-76@2x.png" width="152" />
+    <!-- iOS 6.1 -->
+    <!-- Spotlight Icon -->
+    <icon gap:platform="ios" height="40" src="www/res/icon/ios/icon-40.png" width="40" />
+    <icon gap:platform="ios" height="80" src="www/res/icon/ios/icon-40@2x.png" width="80" />
+    <icon gap:platform="ios" height="160" src="www/res/icon/ios/icon-40@3x.png" width="160" />
+    <!-- iPhone / iPod Touch -->
+    <icon gap:platform="ios" height="57" src="www/res/icon/ios/icon.png" width="57" />
+    <icon gap:platform="ios" height="114" src="www/res/icon/ios/icon@2x.png" width="114" />
+    <!-- iPad -->
     <icon gap:platform="ios" height="72" src="www/res/icon/ios/icon-72.png" width="72" />
-    <icon gap:platform="ios" height="114" src="www/res/icon/ios/icon-57-2x.png" width="114" />
-    <icon gap:platform="ios" height="144" src="www/res/icon/ios/icon-72-2x.png" width="144" />
+    <icon gap:platform="ios" height="144" src="www/res/icon/ios/icon-72@2x.png" width="144" />
+    <!-- iPhone Spotlight and Settings Icon -->
+    <icon gap:platform="ios" height="29" src="www/res/icon/ios/icon-small.png" width="29" />
+    <icon gap:platform="ios" height="58" src="www/res/icon/ios/icon-small@2x.png" width="58" />
+    <icon gap:platform="ios" height="87" src="www/res/icon/ios/icon-small@3x.png" width="87" />
+    <!-- iPad Spotlight and Settings Icon -->
+    <icon gap:platform="ios" height="50" src="www/res/icon/ios/icon-small-50.png" width="50" height="50" />
+    <icon gap:platform="ios" height="100" src="www/res/icon/ios/icon-small-50@2x.png" width="100" height="100" />
     <icon gap:platform="webos" src="www/res/icon/webos/icon-64.png" />
     <icon gap:platform="winphone" src="www/res/icon/windows-phone/icon-48.png" />
     <icon gap:platform="winphone" gap:role="background" src="www/res/icon/windows-phone/icon-173-tile.png" />
-    <gap:splash gap:platform="android" gap:qualifier="port-ldpi" src="www/res/screen/android/screen-ldpi-portrait.png" />
-    <gap:splash gap:platform="android" gap:qualifier="port-mdpi" src="www/res/screen/android/screen-mdpi-portrait.png" />
-    <gap:splash gap:platform="android" gap:qualifier="port-hdpi" src="www/res/screen/android/screen-hdpi-portrait.png" />
-    <gap:splash gap:platform="android" gap:qualifier="port-xhdpi" src="www/res/screen/android/screen-xhdpi-portrait.png" />
     <gap:splash gap:platform="blackberry" src="www/res/screen/blackberry/screen-225.png" />
-    <gap:splash gap:platform="ios" height="480" src="www/res/screen/ios/screen-iphone-portrait.png" width="320" />
-    <gap:splash gap:platform="ios" height="960" src="www/res/screen/ios/screen-iphone-portrait-2x.png" width="640" />
-    <gap:splash gap:platform="ios" height="1136" src="www/res/screen/ios/screen-iphone-portrait-568h-2x.png" width="640" />
-    <gap:splash gap:platform="ios" height="1024" src="www/res/screen/ios/screen-ipad-portrait.png" width="768" />
-    <gap:splash gap:platform="ios" height="768" src="www/res/screen/ios/screen-ipad-landscape.png" width="1024" />
     <gap:splash gap:platform="winphone" src="www/res/screen/windows-phone/screen-portrait.jpg" />
     <access origin="*" />
-    <plugin name="cordova-plugin-whitelist" version="1" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-intent href="tel:*" />
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
+    <!-- 
+    <access origin="*://192.168.10.29" />
+    <access origin="*://maps.google.com" />
+    <access origin="*://maps.gstatic.com" />
+    <access origin="*://*furtrack.com" />
+    <access origin="*://*furtrack.co.za" />
+    <access origin="*://maps.googleapis.com" />
+    <access origin="content:///*" /> -->
+    <log level="DEBUG" />
     <platform name="android">
+        <!--        <preference name="android-minSdkVersion" value="15"/>
+        <preference name="android-targetSdkVersion" value="21" /> -->
         <allow-intent href="market:*" />
+        <splash qualifier="port-ldpi" src="www/res/screen/android/screen-ldpi-portrait.png" />
+        <splash qualifier="port-mdpi" src="www/res/screen/android/screen-mdpi-portrait.png" />
+        <splash qualifier="port-hdpi" src="www/res/screen/android/screen-hdpi-portrait.png" />
+        <splash qualifier="port-xhdpi" src="www/res/screen/android/screen-xhdpi-portrait.png" />
+        <!--
+        <splash qualifier="land-ldpi" src="www/res/screen/android/screen-ldpi-landscape.png" />
+        <splash qualifier="land-mdpi" src="www/res/screen/android/screen-mdpi-landscape.png" />
+        <splash qualifier="land-hdpi" src="www/res/screen/android/screen-hdpi-landscape.png" />
+        <splash qualifier="land-xhdpi" src="www/res/screen/android/screen-xhdpi-landscape.png" />
+        // -->
     </platform>
     <platform name="ios">
+        <preference name="deployment-target" value="7.0" />
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
-    </platform>
+        <!-- iOS 8.0+ -->
+        <!-- iPhone 6 Plus  -->
+        <splash height="2208" src="www/res/screen/ios/screen-portrait-736h.png" width="1242" />
+        <splash height="1242" src="www/res/screen/ios/screen-landscape-736h.png" width="2208" />
+        <!-- iPhone 6 -->
+        <splash height="1334" src="www/res/screen/ios/screen-portrait-667h.png" width="750" />
+        <splash height="750" src="www/res/screen/ios/screen-landscape-667h.png" width="1334" />
+        <!-- iOS 7.0+ -->
+        <!-- iPhone 5 -->
+        <splash height="640" src="www/res/screen/ios/screen-portrait-568h.png" width="1136" />
+        <splash height="1136" src="www/res/screen/ios/screen-landscape-568h.png" width="640" />
+        <!-- iPad -->
+        <splash height="2048" src="www/res/screen/ios/screen-ipad-portrait@2x.png" width="1536" />
+        <splash height="1536" src="www/res/screen/ios/screen-ipad-landscape@2x.png" width="2048" />
+        <!-- iOS 6.1 -->
+        <!-- iPhone -->
+        <splash height="960" src="www/res/screen/ios/screen-iphone-portrait@2x.png" width="640" />
+        <splash height="640" src="www/res/screen/ios/screen-iphone-landscape@2x.png" width="960" />
+        <splash height="480" src="www/res/screen/ios/screen-iphone-portrait.png" width="320" />
+        <splash height="320" src="www/res/screen/ios/screen-iphone-landscape.png" width="480" />
+        <!-- iPad -->
+        <splash height="1024" src="www/res/screen/ios/screen-ipad-portrait.png" width="768" />
+        <splash height="768" src="www/res/screen/ios/screen-ipad-landscape.png" width="1024" />
+     </platform>
     <engine name="ios" spec="~3.9.2" />
     <engine name="android" spec="~4.1.1" />
 </widget>

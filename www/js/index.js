@@ -50,9 +50,9 @@ var app = {
         
         $(document).on("pagecontainershow", function (event, ui) {
             console.log("Showing " + ui.toPage.attr('id'));
-            if(ui.toPage.attr('id') == 'Page1')
+            if('Page1' == ui.toPage.attr('id') && undefined !== google && map.map instanceof google.maps.Map)
                 google.maps.event.trigger(map.map, 'resize');
-            if(!devices.done && ui.toPage.attr('id') == 'Page2')
+            if(!devices.done && 'Page2' == ui.toPage.attr('id'))
                 devices.populateDeviceList();
             } );
     },
@@ -91,6 +91,7 @@ var app = {
                     serverReachable(app.server);
                 } else {
                     $('#no-internet').show();
+                    console.log('Connection state is: ' + connState);
                 }
                 poll(3000);
             }, timeout);
